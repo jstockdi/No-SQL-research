@@ -1,13 +1,11 @@
 package nosql;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 
 import nosql.dao.NoSqlDao;
-import nosql.model.Artist;
+import nosql.io.ArtistLineProcessor;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -19,30 +17,7 @@ import com.google.inject.Injector;
 
 public class PopulateDatasource {
 
-  private static final class ArtistLineProcessor
-          implements
-            LineProcessor<Artist> {
-
-    private final NoSqlDao noSqlLoader;
-    public ArtistLineProcessor(NoSqlDao noSqlLoader) {
-      this.noSqlLoader = noSqlLoader;
-    }
-
-    public Artist getResult() {
-      return null;
-    }
-
-    public boolean processLine(String line) throws IOException {
-
-      Artist artist = new Artist();
-
-      noSqlLoader.insertArtist(artist);
-
-      return true;
-    }
-  }
   public static void main(String[] args) {
-
     final Datastore datastore;
     try {
       datastore = Datastore.valueOf(args[0]);
@@ -50,21 +25,20 @@ public class PopulateDatasource {
       throw new IllegalArgumentException(
               "Could not determine datastore from args");
     }
+    
+    final Injector injector = Guice.createInjector(new ApplicationModule());
+    final NoSqlDao noSqlLoader = injector.getInstance(NoSqlDao.class);
   }
 
-  private final Datastore datastore;
-  private NoSqlDao noSqlLoader;
+  private final NoSqlDao noSqlLoader;
+  
 
-  public PopulateDatasource(Datastore datastore) {
-    this.datastore = datastore;
-    
-    Injector injector = Guice.createInjector(new ApplicationModule());
-    noSqlLoader = injector.getInstance(NoSqlDao.class);
+  public PopulateDatasource(NoSqlDao noSqlLoader) {
+    this.noSqlLoader = noSqlLoader;
   }
   
   public void populateArtists(File artistFile) throws IOException{
-    populate(artistFile, new ArtistLineProcessor(
-            noSqlLoader));
+    populate(artistFile, new ArtistLineProcessor(noSqlLoader));
   }
 
   //XXX Fix generic warnings
