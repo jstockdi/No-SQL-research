@@ -5,18 +5,19 @@ import java.util.Iterator;
 
 import nosql.dao.NoSqlDao;
 import nosql.model.Artist;
+import nosql.model.Location;
 
 import com.google.common.base.Splitter;
 import com.google.common.io.LineProcessor;
 
-public final class ArtistLineProcessor
+public final class ArtistLocationLineProcessor
         implements
           LineProcessor<Integer> {
 
   private int count = 0;
   
   private final NoSqlDao noSqlLoader;
-  public ArtistLineProcessor(NoSqlDao noSqlLoader) {
+  public ArtistLocationLineProcessor(NoSqlDao noSqlLoader) {
     this.noSqlLoader = noSqlLoader;
   }
 
@@ -29,13 +30,11 @@ public final class ArtistLineProcessor
     Iterator<String> iterator = Splitter.on("<SEP>").split(line).iterator();
     
     String artistId = iterator.next();
-    String artistMid = iterator.next();
-    String trackId = iterator.next();
-    String artistName = iterator.next();
-    
-    Artist artist = new Artist(artistId, artistMid, trackId, artistName);
+    double latitude = Double.parseDouble(iterator.next());
+    double longitude = Double.parseDouble(iterator.next());
 
-    noSqlLoader.insertArtist(artist);
+    
+    noSqlLoader.updateLatLong(artistId, new Location(latitude, longitude));
 
     count++;
     return true;

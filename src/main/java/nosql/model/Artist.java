@@ -2,6 +2,7 @@ package nosql.model;
 
 import org.bson.types.ObjectId;
 
+import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Id;
 import com.google.common.base.Objects;
 
@@ -10,10 +11,15 @@ public class Artist {
   @Id
   private ObjectId objectId;
   
-  private final String artistId;
-  private final String artistMid;
-  private final String trackId;
-  private final String artistName;
+  private String artistId;
+  private String artistMid;
+  private String trackId;
+  private String artistName;
+  
+  @Embedded
+  private Location location;
+  
+  
 
   public Artist(String artistId, String artistMid, String trackId,
           String artistName) {
@@ -30,7 +36,8 @@ public class Artist {
       return Objects.equal(getArtistId(), other.getArtistId())
               && Objects.equal(getArtistMid(), other.getArtistMid())
               && Objects.equal(getTrackId(), other.getTrackId())
-              && Objects.equal(getArtistName(), other.getArtistName());
+              && Objects.equal(getArtistName(), other.getArtistName())
+              && Objects.equal(getLocation(), other.getLocation());
     } else {
       return false;
     }
@@ -56,7 +63,7 @@ public class Artist {
   @Override
   public int hashCode() {
     return Objects.hashCode(getArtistId(), getArtistMid(), getTrackId(),
-            getArtistName());
+            getArtistName(), getLocation());
   }
   @Override
   public String toString() {
@@ -65,6 +72,11 @@ public class Artist {
             .add("artistMid", getArtistMid())
             .add("trackId", getTrackId())
             .add("name", getArtistName())
+            .add("location", getLocation())
             .toString();
+  }
+  
+  public Location getLocation() {
+    return location;
   }
 }

@@ -10,6 +10,7 @@ import nosql.model.Artist;
 
 import org.junit.Test;
 
+import com.google.common.base.Joiner;
 import com.google.common.io.LineProcessor;
 
 public class ArtistLineProcessorTest {
@@ -24,11 +25,10 @@ public class ArtistLineProcessorTest {
     Artist expectedArtist = new Artist(ARTIST_ID, ARTIST_MID, TRACK_ID, ARTIST_NAME);
     NoSqlDao mockDao = mock(NoSqlDao.class);
 
-    LineProcessor<Artist> lineProcessor = new ArtistLineProcessor(mockDao);
+    LineProcessor<Integer> lineProcessor = new ArtistLineProcessor(mockDao);
 
-    
-    lineProcessor.processLine(ARTIST_ID + FIELD_SEPARATOR + ARTIST_MID
-            + FIELD_SEPARATOR + TRACK_ID + FIELD_SEPARATOR + ARTIST_NAME);
+    String line = Joiner.on(FIELD_SEPARATOR).join(ARTIST_ID, ARTIST_MID, TRACK_ID, ARTIST_NAME);
+    lineProcessor.processLine(line);
     verify(mockDao).insertArtist(expectedArtist);
   }
 }

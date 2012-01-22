@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nosql.model.Artist;
+import nosql.model.Location;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
+import com.google.code.morphia.query.Query;
+import com.google.code.morphia.query.UpdateOperations;
 import com.google.inject.Inject;
 import com.mongodb.Mongo;
 
@@ -40,7 +43,17 @@ public class MongoDao implements NoSqlDao {
   }
   
   public void insertArtist(Artist artist) {
-    LOGGER.debug("Creating artist: " + artist);
+    LOGGER.debug("Creating artist: {}", artist);
     ds.save(artist);
+  }
+
+
+  public void updateLatLong(String artistId, Location location) {
+    
+    final Query<Artist> query = ds.createQuery(Artist.class).field("artistId").equal(artistId);
+    final UpdateOperations<Artist> updateOperations = ds.createUpdateOperations(Artist.class).set("location", location);
+    
+    ds.update(query, updateOperations);
+    
   }
 }
