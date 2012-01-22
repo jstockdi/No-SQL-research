@@ -17,32 +17,30 @@ import com.google.inject.Injector;
 
 public class PopulateDatasource {
 
-  public static void main(String[] args) {
-    final Datastore datastore;
+  public static void main(String[] args) throws IOException {
+    
+    final DatastoreEnum datastore;
     try {
-      datastore = Datastore.valueOf(args[0]);
+      datastore = DatastoreEnum.valueOf(args[0]);
     } catch (Exception e) {
       throw new IllegalArgumentException(
               "Could not determine datastore from args");
     }
     
-    final Injector injector = Guice.createInjector(new ApplicationModule());
+    String baseDir = "/kenzan/NoSQL/data/MillionSongSubset/";
+    final String artistFilename = baseDir + "AdditionalFiles/subset_unique_artists.txt";
+    
+    
+    final Injector injector = Guice.createInjector(new ApplicationModule(datastore));
     final NoSqlDao noSqlLoader = injector.getInstance(NoSqlDao.class);
+    
+    PopulateDatasource populateDatasource = new PopulateDatasource();
+    populateDatasource.populate(new File(artistFilename), new ArtistLineProcessor(noSqlLoader));
   }
 
-  private final NoSqlDao noSqlLoader;
-  
-
-  public PopulateDatasource(NoSqlDao noSqlLoader) {
-    this.noSqlLoader = noSqlLoader;
-  }
-  
-  public void populateArtists(File artistFile) throws IOException{
-    populate(artistFile, new ArtistLineProcessor(noSqlLoader));
-  }
 
   //XXX Fix generic warnings
-  private void populate(File dataFile, LineProcessor callback) throws IOException {
+  public void populate(File dataFile, LineProcessor callback) throws IOException {
     
     InputSupplier<InputStreamReader> inputSupplier = Files
             .newReaderSupplier(dataFile, Charsets.US_ASCII);

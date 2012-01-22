@@ -1,11 +1,11 @@
-package nosql.mongo;
+package nosql.dao.mongo;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
-import nosql.mongo.model.Address;
-import nosql.mongo.model.Hotel;
+import nosql.dao.mongo.model.Address;
+import nosql.dao.mongo.model.Hotel;
 
 import org.bson.types.ObjectId;
 import org.junit.Test;

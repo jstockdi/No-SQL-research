@@ -1,4 +1,4 @@
-package nosql.mongo.model;
+package nosql.dao.mongo.model;
 
 import com.google.code.morphia.annotations.Embedded;
 

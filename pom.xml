@@ -19,6 +19,10 @@
       <id>morphia</id>
       <url>http://morphia.googlecode.com/svn/mavenrepo</url>
     </repository>
+    <repository>
+      <id>artifactory-kenzan</id>
+      <url>http://artifactory.kenzanmedia.com/artifactory/ext-release-local</url>
+    </repository>
   </repositories>
   <dependencies>
 
@@ -63,5 +67,27 @@
 				<artifactId>mockito-core</artifactId>
 				<version>1.9.0</version>
 			</dependency>
+			<dependency>
+			<groupId>cisd-jhdf5</groupId>
+			<artifactId>batteries_included_lin_win_mac_sol</artifactId>
+			<version>11.09.1-r22873</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>1.6.4</version>
+			</dependency>
   </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerVersion>1.6</compilerVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
