@@ -7,4 +7,6 @@ public interface NoSqlDao{
   void insertArtist(Artist artist);
 
   void updateLatLong(String artistId, Location location);
+
+  void updateNewSimilarities(String target, String similar);
 }

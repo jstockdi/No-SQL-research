@@ -15,14 +15,17 @@ public class ApplicationModule extends AbstractModule {
     this.datastore = datastore;
   }
 
+  
+  @SuppressWarnings("unchecked")
   @Override
   protected void configure() {
+    
     bind(NoSqlDao.class).to(datastore.getDaoClass());
+    
     bind(Datastore.class).toProvider(new Provider<Datastore>() {
       public Datastore get() {
         return MongoDao.createDatastore("million");
       }
-    } );
+    });
   }
-
 }

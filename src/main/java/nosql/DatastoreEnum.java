@@ -2,6 +2,7 @@ package nosql;
 
 import nosql.dao.MongoDao;
 
+@SuppressWarnings("rawtypes")
 public enum DatastoreEnum{
   MongoDB(MongoDao.class);
   

@@ -1,10 +1,10 @@
 package nosql.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import nosql.model.Artist;
 import nosql.model.Location;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
@@ -52,6 +52,20 @@ public class MongoDao implements NoSqlDao {
     
     final Query<Artist> query = ds.createQuery(Artist.class).field("artistId").equal(artistId);
     final UpdateOperations<Artist> updateOperations = ds.createUpdateOperations(Artist.class).set("location", location);
+    
+    ds.update(query, updateOperations);
+    
+  }
+
+
+  /*
+   *  assumes the similar array does not include the similar
+   */
+  public void updateNewSimilarities(String target, String similar) {
+
+    final Query<Artist> query = ds.createQuery(Artist.class).field("artistId").equal(target);
+    final UpdateOperations<Artist> updateOperations = 
+            ds.createUpdateOperations(Artist.class).add("similar", similar); 
     
     ds.update(query, updateOperations);
     

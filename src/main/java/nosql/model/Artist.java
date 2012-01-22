@@ -1,11 +1,17 @@
 package nosql.model;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Index;
+import com.google.code.morphia.annotations.Reference;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
+@Index(background=false, unique=true, value="artistId")
 public class Artist {
 
   @Id
@@ -16,11 +22,12 @@ public class Artist {
   private String trackId;
   private String artistName;
   
+  @Reference
+  private List<Artist> similar = Lists.newArrayList();  //XXX once working w/ morphia, try to change list to Iterables or something more generic.
+  
   @Embedded
   private Location location;
   
-  
-
   public Artist(String artistId, String artistMid, String trackId,
           String artistName) {
     super();
@@ -29,6 +36,8 @@ public class Artist {
     this.trackId = trackId;
     this.artistName = artistName;
   }
+  
+  
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof Artist) {
@@ -60,6 +69,11 @@ public class Artist {
     return trackId;
   }
   
+  public List<Artist> getSimilar() {
+    return similar;
+  }
+  
+  //XXX Add similar to hashcode and equals
   @Override
   public int hashCode() {
     return Objects.hashCode(getArtistId(), getArtistMid(), getTrackId(),

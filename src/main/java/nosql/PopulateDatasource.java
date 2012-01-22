@@ -4,10 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.sql.DataSource;
+
+import knzn.db.Database;
+import knzn.db.DatabaseImpl;
+import knzn.db.ResultSetHandler;
+
 import nosql.dao.NoSqlDao;
+import nosql.dao.SimilarityResultSetHandler;
 import nosql.io.ArtistLineProcessor;
 import nosql.io.ArtistLocationLineProcessor;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +33,13 @@ public class PopulateDatasource {
   private final NoSqlDao noSqlDao;
 
 
+  private static DataSource createDataSource(String url){
+    BasicDataSource dataSource = new BasicDataSource();
+    dataSource.setDriverClassName("org.sqlite.JDBC");
+    dataSource.setUrl(url);
+     return dataSource;
+  }
+  
   public static void main(String[] args) throws IOException {
     
     final DatastoreEnum datastore;
@@ -42,6 +57,7 @@ public class PopulateDatasource {
     
     final String artistFilename = baseDir + "AdditionalFiles/subset_unique_artists.txt";
     final String artistLocationsFilename = baseDir + "AdditionalFiles/subset_artist_location.txt";
+    final String artistSimilarityUrl = "jdbc:sqlite:" + baseDir + "AdditionalFiles/subset_artist_similarity.db";
     
     final Injector injector = Guice.createInjector(new ApplicationModule(datastore));
     final NoSqlDao noSqlDao = injector.getInstance(NoSqlDao.class);
@@ -52,9 +68,34 @@ public class PopulateDatasource {
     
     populateDatasource.loadArtistLocations(artistLocationsFilename);
     
+    populateDatasource.loadArtistSimilarities(artistSimilarityUrl);
 
   }
   
+  private void loadArtistSimilarities(String artistSimilarityUrl) {
+
+    SimilarityResultSetHandler resultSetHandler = new SimilarityResultSetHandler(noSqlDao);
+    String artistSimilarityQuery = "select * from similarity";
+    
+    Stopwatch stopwatch = new Stopwatch().start();
+    populateSqlite(artistSimilarityUrl, artistSimilarityQuery, resultSetHandler);
+    int count = resultSetHandler.getCount();
+    
+    LOGGER.info("Loaded " + count + " similarities in millis: " + stopwatch.elapsedMillis());
+    LOGGER.info("Updates per second " + ((double)count / (double)stopwatch.elapsedMillis()*1000));
+  }
+
+  private <T> void populateSqlite(String jdbcUrl, String query,
+          ResultSetHandler<T> resultSetHandler) {
+    
+    DataSource dataSource = createDataSource(jdbcUrl);
+    Database database = new DatabaseImpl(dataSource);
+    
+    database.query(query, resultSetHandler);
+    
+    
+  }
+
   private void loadArtistLocations(String artistLocationsFilename) throws IOException {
     Stopwatch stopwatch = new Stopwatch().start();
     LineProcessor<Integer> artistLocationProcessor = new ArtistLocationLineProcessor(noSqlDao);
@@ -87,8 +128,7 @@ public class PopulateDatasource {
   private static final Logger LOGGER = LoggerFactory.getLogger(PopulateDatasource.class);
   
   
-  //XXX Fix generic warnings
-  public void populate(File dataFile, LineProcessor callback) throws IOException {
+  public <T> void populate(File dataFile, LineProcessor<T> callback) throws IOException {
     
     InputSupplier<InputStreamReader> inputSupplier = Files
             .newReaderSupplier(dataFile, Charsets.US_ASCII);

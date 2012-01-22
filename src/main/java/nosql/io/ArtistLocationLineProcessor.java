@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import nosql.dao.NoSqlDao;
-import nosql.model.Artist;
 import nosql.model.Location;
 
 import com.google.common.base.Splitter;

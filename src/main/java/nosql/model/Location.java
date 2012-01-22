@@ -1,23 +1,24 @@
 package nosql.model;
 
+import com.google.code.morphia.annotations.Indexed;
+import com.google.code.morphia.utils.IndexDirection;
 import com.google.common.base.Objects;
 
 public class Location {
 
-  private final double latitude;
-  private final double longitude;
+  @Indexed(IndexDirection.GEO2D)
+  private final double[] loc;
 
   public Location(double latitude, double longitude) {
-    this.latitude = latitude;
-    this.longitude = longitude;
+    loc = new double[]{latitude, longitude};
   }
 
   public double getLatitude() {
-    return latitude;
+    return loc[0];
   }
 
   public double getLongitude() {
-    return longitude;
+    return loc[1];
   }
   
   @Override
