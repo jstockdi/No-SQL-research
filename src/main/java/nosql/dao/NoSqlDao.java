@@ -9,4 +9,6 @@ public interface NoSqlDao{
   void updateLatLong(String artistId, Location location);
 
   void updateNewSimilarities(String target, String similar);
+
+  void updateTerm(String artistId, String term);
 }

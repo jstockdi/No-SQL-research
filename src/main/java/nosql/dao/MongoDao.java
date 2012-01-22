@@ -70,4 +70,14 @@ public class MongoDao implements NoSqlDao {
     ds.update(query, updateOperations);
     
   }
+
+
+  @Override
+  public void updateTerm(String artistId, String term) {
+    final Query<Artist> query = ds.createQuery(Artist.class).field("artistId").equal(artistId);
+    final UpdateOperations<Artist> updateOperations = 
+            ds.createUpdateOperations(Artist.class).add("terms", term); 
+    
+    ds.update(query, updateOperations);
+  }
 }

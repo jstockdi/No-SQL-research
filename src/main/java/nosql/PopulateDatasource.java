@@ -12,6 +12,7 @@ import knzn.db.ResultSetHandler;
 
 import nosql.dao.NoSqlDao;
 import nosql.dao.SimilarityResultSetHandler;
+import nosql.dao.TermsResultSetHandler;
 import nosql.io.ArtistLineProcessor;
 import nosql.io.ArtistLocationLineProcessor;
 
@@ -58,6 +59,7 @@ public class PopulateDatasource {
     final String artistFilename = baseDir + "AdditionalFiles/subset_unique_artists.txt";
     final String artistLocationsFilename = baseDir + "AdditionalFiles/subset_artist_location.txt";
     final String artistSimilarityUrl = "jdbc:sqlite:" + baseDir + "AdditionalFiles/subset_artist_similarity.db";
+    final String artistTermsUrl = "jdbc:sqlite:" + baseDir + "AdditionalFiles/subset_artist_term.db";
     
     final Injector injector = Guice.createInjector(new ApplicationModule(datastore));
     final NoSqlDao noSqlDao = injector.getInstance(NoSqlDao.class);
@@ -66,12 +68,26 @@ public class PopulateDatasource {
 
     populateDatasource.loadArtists(artistFilename);
     
-    populateDatasource.loadArtistLocations(artistLocationsFilename);
+//    populateDatasource.loadArtistLocations(artistLocationsFilename);
     
-    populateDatasource.loadArtistSimilarities(artistSimilarityUrl);
+//    populateDatasource.loadArtistSimilarities(artistSimilarityUrl);
 
+    populateDatasource.loadArtistTerms(artistTermsUrl);
   }
   
+  private void loadArtistTerms(String artistTermsUrl) {
+    TermsResultSetHandler resultSetHandler = new TermsResultSetHandler(noSqlDao, "term");
+    String artistSimilarityQuery = "select * from artist_term";
+    
+    Stopwatch stopwatch = new Stopwatch().start();
+    populateSqlite(artistTermsUrl, artistSimilarityQuery, resultSetHandler);
+    int count = resultSetHandler.getCount();
+    
+    LOGGER.info("Loaded " + count + " terms in millis: " + stopwatch.elapsedMillis());
+    LOGGER.info("Updates per second " + ((double)count / (double)stopwatch.elapsedMillis()*1000));
+    
+  }
+
   private void loadArtistSimilarities(String artistSimilarityUrl) {
 
     SimilarityResultSetHandler resultSetHandler = new SimilarityResultSetHandler(noSqlDao);

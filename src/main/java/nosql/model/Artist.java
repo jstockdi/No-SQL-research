@@ -1,6 +1,7 @@
 package nosql.model;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 
@@ -10,6 +11,7 @@ import com.google.code.morphia.annotations.Index;
 import com.google.code.morphia.annotations.Reference;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Index(background=false, unique=true, value="artistId")
 public class Artist {
@@ -24,6 +26,8 @@ public class Artist {
   
   @Reference
   private List<Artist> similar = Lists.newArrayList();  //XXX once working w/ morphia, try to change list to Iterables or something more generic.
+  
+  private Set<String> terms = Sets.newHashSet();
   
   @Embedded
   private Location location;
