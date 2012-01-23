@@ -1,6 +1,5 @@
 package nosql.model;
 
-import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -10,7 +9,6 @@ import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Index;
 import com.google.code.morphia.annotations.Reference;
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Index(background=false, unique=true, value="artistId")
@@ -25,12 +23,16 @@ public class Artist {
   private String artistName;
   
   @Reference
-  private List<Artist> similar = Lists.newArrayList();  //XXX once working w/ morphia, try to change list to Iterables or something more generic.
+  private Set<Artist> similar = Sets.newHashSet();  //XXX once working w/ morphia, try to change list to Iterables or something more generic.
   
   private Set<String> terms = Sets.newHashSet();
   
   @Embedded
   private Location location;
+  
+  @SuppressWarnings("unused") //Used for morphia
+  private Artist() {
+  }
   
   public Artist(String artistId, String artistMid, String trackId,
           String artistName) {
@@ -50,7 +52,10 @@ public class Artist {
               && Objects.equal(getArtistMid(), other.getArtistMid())
               && Objects.equal(getTrackId(), other.getTrackId())
               && Objects.equal(getArtistName(), other.getArtistName())
-              && Objects.equal(getLocation(), other.getLocation());
+              && Objects.equal(getLocation(), other.getLocation())
+              && Objects.equal(getSimilar(), other.getSimilar())
+              && Objects.equal(getTerms(), other.getTerms())
+              ;
     } else {
       return false;
     }
@@ -73,15 +78,23 @@ public class Artist {
     return trackId;
   }
   
-  public List<Artist> getSimilar() {
+  public Set<Artist> getSimilar() {
     return similar;
   }
   
-  //XXX Add similar to hashcode and equals
+  public Set<String> getTerms() {
+    return terms;
+  }
+  
   @Override
   public int hashCode() {
-    return Objects.hashCode(getArtistId(), getArtistMid(), getTrackId(),
-            getArtistName(), getLocation());
+    return Objects.hashCode(getArtistId(),
+            getArtistMid(), 
+            getTrackId(),
+            getArtistName(), 
+            getLocation(),
+            getSimilar(),
+            getTerms());
   }
   @Override
   public String toString() {
@@ -91,6 +104,7 @@ public class Artist {
             .add("trackId", getTrackId())
             .add("name", getArtistName())
             .add("location", getLocation())
+            .add("terms", getTerms())
             .toString();
   }
   

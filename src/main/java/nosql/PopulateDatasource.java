@@ -12,6 +12,7 @@ import knzn.db.ResultSetHandler;
 
 import nosql.dao.NoSqlDao;
 import nosql.dao.SimilarityResultSetHandler;
+import nosql.dao.SongResultSetHandler;
 import nosql.dao.TermsResultSetHandler;
 import nosql.io.ArtistLineProcessor;
 import nosql.io.ArtistLocationLineProcessor;
@@ -60,6 +61,7 @@ public class PopulateDatasource {
     final String artistLocationsFilename = baseDir + "AdditionalFiles/subset_artist_location.txt";
     final String artistSimilarityUrl = "jdbc:sqlite:" + baseDir + "AdditionalFiles/subset_artist_similarity.db";
     final String artistTermsUrl = "jdbc:sqlite:" + baseDir + "AdditionalFiles/subset_artist_term.db";
+    final String songUrl = "jdbc:sqlite:" + baseDir + "AdditionalFiles/subset_track_metadata.db";
     
     final Injector injector = Guice.createInjector(new ApplicationModule(datastore));
     final NoSqlDao noSqlDao = injector.getInstance(NoSqlDao.class);
@@ -72,12 +74,29 @@ public class PopulateDatasource {
     
 //    populateDatasource.loadArtistSimilarities(artistSimilarityUrl);
 
-    populateDatasource.loadArtistTerms(artistTermsUrl);
+//    populateDatasource.loadArtistTerms(artistTermsUrl);
+    
+    populateDatasource.loadSongs(songUrl);
   }
   
+  private void loadSongs(String songUrl) {
+
+    SongResultSetHandler resultSetHandler = new SongResultSetHandler(noSqlDao);
+    String songQuery = "select * from songs";
+    
+    Stopwatch stopwatch = new Stopwatch().start();
+    populateSqlite(songUrl, songQuery, resultSetHandler);
+    int count = resultSetHandler.getCount();
+    
+    LOGGER.info("Loaded " + count + " songs in millis: " + stopwatch.elapsedMillis());
+    LOGGER.info("Updates per second " + ((double)count / (double)stopwatch.elapsedMillis()*1000));
+    
+    
+  }
+
   private void loadArtistTerms(String artistTermsUrl) {
-    TermsResultSetHandler resultSetHandler = new TermsResultSetHandler(noSqlDao, "term");
-    String artistSimilarityQuery = "select * from artist_term";
+    TermsResultSetHandler resultSetHandler = new TermsResultSetHandler(noSqlDao);
+    String artistSimilarityQuery = "select artist_id, mbtag as term from artist_mbtag UNION select artist_id, term from artist_term";
     
     Stopwatch stopwatch = new Stopwatch().start();
     populateSqlite(artistTermsUrl, artistSimilarityQuery, resultSetHandler);

@@ -1,9 +1,11 @@
 package nosql.model;
 
+import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Indexed;
 import com.google.code.morphia.utils.IndexDirection;
 import com.google.common.base.Objects;
 
+@Embedded
 public class Location {
 
   @Indexed(IndexDirection.GEO2D)

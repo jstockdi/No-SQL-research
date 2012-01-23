@@ -2,6 +2,7 @@ package nosql.dao;
 
 import nosql.model.Artist;
 import nosql.model.Location;
+import nosql.model.Song;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
+import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.mongodb.Mongo;
 
@@ -79,5 +82,20 @@ public class MongoDao implements NoSqlDao {
             ds.createUpdateOperations(Artist.class).add("terms", term); 
     
     ds.update(query, updateOperations);
+  }
+
+  @Override
+  public Optional<Artist> getArtist(String artistId) {
+    Artist artist = Iterables.getFirst(ds.find(Artist.class)
+            .filter("artistId =", artistId)
+            .fetch(), null);
+    
+    return Optional.fromNullable(artist);
+  }
+
+  @Override
+  public void insertSong(Song song) {
+    LOGGER.debug("Creating song: {}", song);
+    ds.save(song);
   }
 }
