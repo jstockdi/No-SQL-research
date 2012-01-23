@@ -21,7 +21,7 @@
     </repository>
     <repository>
       <id>artifactory-kenzan</id>
-      <url>http://artifactory.kenzanmedia.com/artifactory/ext-release-local</url>
+      <url>http://artifactory.com/artifactory/ext-release-local</url>
     </repository>
   </repositories>
   <dependencies>
