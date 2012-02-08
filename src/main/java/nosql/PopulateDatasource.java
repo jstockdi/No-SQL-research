@@ -77,6 +77,7 @@ public class PopulateDatasource {
 //    populateDatasource.loadArtistTerms(artistTermsUrl);
     
     populateDatasource.loadSongs(songUrl);
+    
   }
   
   private void loadSongs(String songUrl) {

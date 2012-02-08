@@ -6,12 +6,16 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import ch.systemsx.cisd.hdf5.HDF5DataBlock;
 import ch.systemsx.cisd.hdf5.HDF5DataSetInformation;
 import ch.systemsx.cisd.hdf5.HDF5Factory;
 import ch.systemsx.cisd.hdf5.HDF5LinkInformation;
 import ch.systemsx.cisd.hdf5.IHDF5Reader;
 import ch.systemsx.cisd.hdf5.IHDF5SimpleReader;
 import ch.systemsx.cisd.hdf5.IHDF5SimpleWriter;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class Jhdf5Test {
 
@@ -67,6 +71,24 @@ public class Jhdf5Test {
     IHDF5Reader reader = HDF5Factory.openForReading(dataFile);
     browse(reader, reader.getGroupMemberInformation("/", true), "");
 
+    
+    //Read bars_confidence
+    HDF5DataSetInformation dataSetInfo = reader.getDataSetInformation("/analysis/bars_confidence");
+    System.out.println("ele: " + dataSetInfo.getNumberOfElements());
+    System.out.println("typeInfo: " + dataSetInfo.getTypeInformation());
+    System.out.println("sl: " + dataSetInfo.getStorageLayout());
+    
+    System.out.println("bc: " + dataSetInfo);
+    
+    Iterable<HDF5DataBlock<float[]>> blocks = reader.getFloatArrayNaturalBlocks("/analysis/bars_confidence");
+    
+    System.out.println(Iterables.size(blocks));
+    float[] data = blocks.iterator().next().getData();
+    for(float floatD : data){
+      System.out.println(floatD);
+    }
+    
+    
     reader.close();
 
   }
