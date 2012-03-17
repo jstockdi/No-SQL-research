@@ -1,5 +1,7 @@
 package nosql.model;
 
+import org.svenson.JSONProperty;
+
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Indexed;
 import com.google.code.morphia.utils.IndexDirection;
@@ -14,13 +16,27 @@ public class Location {
   public Location(double latitude, double longitude) {
     loc = new double[]{latitude, longitude};
   }
+  
+  public Location(){
+	  loc = new double[2];
+  }
 
+  @JSONProperty(value = "latitude", ignoreIfNull = true)
   public double getLatitude() {
     return loc[0];
   }
 
+  @JSONProperty(value = "logitude", ignoreIfNull = true)
   public double getLongitude() {
     return loc[1];
+  }
+  
+  public void setLatitude(double latitude){
+	  loc[0] = latitude;
+  }
+  
+  public void setLongitude(double longitude){
+	  loc[1] = longitude;
   }
   
   @Override

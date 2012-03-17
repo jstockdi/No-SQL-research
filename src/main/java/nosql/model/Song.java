@@ -1,6 +1,7 @@
 package nosql.model;
 
 import org.bson.types.ObjectId;
+import org.svenson.JSONProperty;
 
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Index;
@@ -23,6 +24,7 @@ public class Song {
   private double familiarity;
   private int year;
   private double artistHotness;
+  private String revision;
 
 
 
@@ -46,41 +48,59 @@ public class Song {
     }
   }
 
-
+  @JSONProperty(value = "artist", ignoreIfNull = true)
   public Artist getArtist() {
     return artist;
   }
   
+  @JSONProperty(value = "artistHotness", ignoreIfNull = true)
   public double getArtistHotness() {
     return artistHotness;
   }
+  
+  @JSONProperty(value = "duration", ignoreIfNull = true)
   public double getDuration() {
     return duration;
   }
+  
+  @JSONProperty(value = "familiarity", ignoreIfNull = true)
   public double getFamiliarity() {
     return familiarity;
   }
+  @JSONProperty(ignore = true)
   public ObjectId getObjectId() {
     return objectId;
   }
   
+  @JSONProperty(value = "release", ignoreIfNull = true)
   public String getRelease() {
     return release;
   }
   
+  @JSONProperty(value = "_id", ignoreIfNull = false)
   public String getSongId() {
     return songId;
   }
+  
+  @JSONProperty(value = "title", ignoreIfNull = true)
   public String getTitle() {
     return title;
   }
+  
+  @JSONProperty(value = "trackId", ignoreIfNull = true)
   public String getTrackId() {
     return trackId;
   }
+  
+  @JSONProperty(value = "year", ignoreIfNull = true)
   public int getYear() {
     return year;
   }
   
+  @JSONProperty(value = "_rev", ignoreIfNull = true)
+  public String getRevision() {
+    return revision;
+  }
   
   @Override
   public int hashCode() {
@@ -131,7 +151,10 @@ public class Song {
   public void setYear(int year) {
     this.year = year;
   }
-
+  
+  public void setRevision(String revision) {
+    this.revision = revision;
+  }
 
   @Override
   public String toString() {
